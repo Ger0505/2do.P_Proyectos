@@ -1,0 +1,80 @@
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+void visulizarMatriz(int**matriz,int n);
+int determinante(int**matriz,int n);
+int cofactor(int**matriz,int n,int fila,int columna);
+int**crearMatriz(int n);
+
+int main(){
+	int **matriz,n,i,j;
+	
+	printf("DETERMINANTE DE UNA MATRIZ nxn\n");
+	do{
+		printf("Ingresar valor n:");
+		scanf("%i",&n);
+		if(n<1){
+			printf("*el valor de n debe ser mayor a 0\n");
+		}
+	}while(n<1);
+	matriz=crearMatriz(n);
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+			scanf("%i",&matriz[i][j]);
+		}
+	}
+	printf("-----------------\n");
+	printf("Matriz:\n");
+	visulizarMatriz(matriz,n);
+	printf("\nDETERMINANTE: %i",determinante(matriz,n));
+}
+
+void visulizarMatriz(int**matriz,int n){
+	int i,j;
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+		    printf("%i\t",matriz[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int determinante(int**matriz,int n){
+	int j,determinante=0;
+	if(n==1){
+	   determinante+=matriz[0][0];	
+	}else{
+		for(j=0;j<n;j++){
+		determinante+=matriz[0][j]*cofactor(matriz,n,0,j);
+	    }
+	}
+	return determinante;
+}
+
+int cofactor(int**matriz,int n,int fila,int columna){
+	int**matriz1;
+	int i,j,k=0,l=0,nc=n-1;
+	matriz1=crearMatriz(nc);
+	for(i=0;i<n;i++){
+		for(j=0;j<n;j++){
+			if(i!=fila && j!=columna){
+				matriz1[k][l]=matriz[i][j];
+				l++;
+				if(l==nc){
+					k++;
+					l=0;
+				}
+			}
+		}
+	}
+	return pow(-1,fila+columna)*determinante(matriz1,nc);
+}
+
+int**crearMatriz(int n){
+	int**matriz=(int**)malloc(n*sizeof(int*)),i;
+	for(i=0;i<n;i++){
+		matriz[i]=(int*)malloc(n*sizeof(int));
+	}
+	return matriz;
+}
