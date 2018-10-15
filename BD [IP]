@@ -3,7 +3,7 @@
 #define Arbol struct arbol
 
 Arbol{
-	int ID,s;
+	int ID,s,R;
 	char n[15],a1[15],a2[15];
 	float calf;
 	Arbol*der;
@@ -11,10 +11,11 @@ Arbol{
 };
 
 void insertarArbol(Arbol*nuevo);
-void inorden(Arbol*r);
+void preorden(Arbol*r,FILE*fila);
 Arbol*raiz=NULL;
 
 int main(){
+	int num=0;
 	int I,S;
 	char N[15],A1[15],A2[15];
 	float ca;
@@ -24,7 +25,9 @@ int main(){
 		return 0;
 	}
 	while(!feof(regist)){
+		num++;
 		Arbol*nuevo=(Arbol*)malloc(sizeof(Arbol));
+		nuevo->R=num;
 		fscanf(regist,"%i",&nuevo->ID);
 		fflush(stdin);
 		fscanf(regist,"%s",&nuevo->n);
@@ -38,8 +41,9 @@ int main(){
 		insertarArbol(nuevo);
 	}
 	fclose(regist);
-	//FILE*arbol=fopen("Tabla.txt","wb");
-	//inorden(raiz);
+	FILE*arbol=fopen("Tabla.txt","wb");
+	preorden(raiz,arbol);
+	fclose(arbol);
 }
 
 void insertarArbol(Arbol*nuevo){
@@ -53,21 +57,31 @@ void insertarArbol(Arbol*nuevo){
 		}
 	}
 	if(ant==NULL){
-		printf("its the raiz\n");
 		raiz=nuevo;
 	}else if(nuevo->ID>ant->ID){
-		printf("its the der\n");
 		ant->der=nuevo;
 	}else{
 		ant->izq=nuevo;
 	}
-	printf("Termino\n");
 }
 
-void inorden(Arbol*r){
+void preorden(Arbol*r,FILE*fila){
+	int i,d;
 	if(r!=NULL){
-		inorden(r->izq);
-		printf("%s ",r->n);
-		inorden(r->der);
+		if(r->izq==NULL && r->der==NULL){
+			fprintf(fila,"%i %i %i %i\n",-1,r->ID,r->R,-1);
+		   printf("-2 %s\n",r->n);
+		}else if(r->izq==NULL){
+		   fprintf(fila,"%i %i %i %i\n",-1,r->ID,r->R,r->der->R);
+		   printf("1 %s\n",r->n);	
+		}else if(r->der==NULL){
+			fprintf(fila,"%i %i %i %i\n",r->izq->R,r->ID,r->R,-1);
+			printf("-1 %s\n",r->n);	
+		}else{
+			fprintf(fila,"%i %i %i %i\n",r->izq->R,r->ID,r->R,r->der->R);
+			printf("2 %s\n",r->n);	
+		}
+		preorden(r->izq,fila);
+		preorden(r->der,fila);
 	}
 }
